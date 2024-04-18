@@ -19,7 +19,7 @@ Currently supports:
 - Optional environments:
   - THRESHOLD, double with the minimum score inspector2 must have for a message to be sent default to 0.0
   - ONLYLATEST, bool if only images in ECR with tag latest should be reported to slack for inspector, default to false.
-  - AWS_ACCOUNT_NAME, string friendly name that will be added to slack message if not present accoint id is used.
+  - AWS_ACCOUNT_NAME(not implemented yet), string friendly name that will be added to slack message if not present accoint id is used.
   - AWS_HEALTH_EVENTS_TO_SKIP comma separated list of AWS health events to ignore
 
 - Docker is used for building the release, the release is built for arm architecture.
