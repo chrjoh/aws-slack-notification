@@ -1,4 +1,4 @@
-# Slack notification
+# AWS Slack notification
 
 Lambda that takes messages from AWS SNS or event bridge and publish them to a slack channel.
 Currently supports:
