@@ -1,0 +1,74 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "osx-base",
+            "displayName": "Debug-osx",
+            "inherits": [
+                "base"
+            ],
+            "cacheVariables": {
+                "VCPKG_INSTALL_OPTIONS": "--allow-unsupported",
+                "CMAKE_CXX_COMPILER": "clang++"
+            },
+            "vendor": {
+                "microsoft.com/VisualStudioSettings/CMake/1.0": {
+                    "hostOS": [
+                        "macOS"
+                    ]
+                }
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "core-build",
+            "description": "Inherits environment from base configurePreset",
+            "configurePreset": "base",
+            "hidden": true,
+            "inheritConfigureEnvironment": true
+        },
+        {
+            "name": "macos-clean-build",
+            "description": "Clean before build (--clean-first)",
+            "configurePreset": "osx-base",
+            "inherits": "core-build",
+            "cleanFirst": true
+        },
+        {
+            "name": "macos-verbose-build",
+            "description": "Passes -v to Ninja",
+            "configurePreset": "osx-base",
+            "inherits": "core-build",
+            "nativeToolOptions": [
+                "-v"
+            ]
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "core-test",
+            "description": "Enable output on failure",
+            "configurePreset": "base",
+            "hidden": false,
+            "output": {
+                "outputOnFailure": true
+            }
+        },
+        {
+            "name": "osx-core-test",
+            "configurePreset": "osx-base",
+            "inherits": "core-test"
+        }
+    ]
+}

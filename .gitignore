@@ -1,0 +1,4 @@
+build/
+release_build/slack-notification.zip
+.DS_Store
+.vscode

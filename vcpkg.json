@@ -1,0 +1,24 @@
+{
+  "name": "aws-slack-notification",
+  "version": "0.0.1",
+  "dependencies": [
+    "aws-lambda-cpp",
+    "gtest",
+    "nlohmann-json",
+    "curl"
+  ],
+  "overrides": [
+    {
+      "name": "nlohmann",
+      "version": "3.11.3"
+    },
+    {
+      "name": "curl",
+      "version": "8.6.0"
+    },
+    {
+      "name": "aws-lambda-cpp",
+      "version": "0.2.10"
+    }
+  ]
+}
