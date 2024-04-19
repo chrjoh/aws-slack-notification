@@ -35,5 +35,5 @@ RUN  cmake -B build -S . -DVCPKG_BUILD_TYPE=release -DCMAKE_BUILD_TYPE=Release -
 WORKDIR /home/root/_src/build
 RUN  cmake --build .
 RUN ctest
-RUN  cmake --build . --target aws-lambda-package-slack-notification 
-CMD [ "cp", "slack-notification.zip", "/release_build/"]
+RUN  cmake --build . --target aws-lambda-package-aws-slack-notification 
+CMD [ "cp", "aws-slack-notification.zip", "/release_build/"]

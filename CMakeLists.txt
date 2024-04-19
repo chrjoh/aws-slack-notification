@@ -11,7 +11,7 @@ set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 set(VCPKG_INSTALL_OPTIONS "--allow-unsupported")
 set(CMAKE_CXX_STANDARD 17)
-project(slack-notification LANGUAGES CXX)
+project(aws-slack-notification LANGUAGES CXX)
 enable_testing()
 
 find_package(aws-lambda-runtime CONFIG REQUIRED)
