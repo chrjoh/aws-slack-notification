@@ -1,9 +1,9 @@
 #include "awshealth.hpp"
 
-Awshealth::Awshealth(std::string const& slackChannel, std::vector<std::string> types) : Slack(slackChannel), eventTypes(types) {
+Awshealth::Awshealth(std::string const &slackChannel, std::optional<std::string> accountName, std::vector<std::string> types) : Slack(slackChannel), accountName(accountName), eventTypes(types) {
 }
 
-void Awshealth::parse(nlohmann::json const& message) {
+void Awshealth::parse(nlohmann::json const &message) {
     using nljson = nlohmann::json;
     nljson localJson;
     std::string region = message["region"];
@@ -20,7 +20,7 @@ void Awshealth::parse(nlohmann::json const& message) {
 
         if (!skipEventType(eventTypeCode)) {
             std::vector<std::string> data = message["resources"].get<std::vector<std::string>>();
-            std::string resources = data.empty() ? "--" : std::accumulate(data.begin(), data.end(), std::string(), [](const std::string& a, const std::string& b) -> std::string {
+            std::string resources = data.empty() ? "--" : std::accumulate(data.begin(), data.end(), std::string(), [](const std::string &a, const std::string &b) -> std::string {
                 return a + (a.length() > 0 ? "," : "") + b;
             });
             std::string eventArn = detail["eventArn"];
@@ -33,7 +33,7 @@ void Awshealth::parse(nlohmann::json const& message) {
 
             // affectedEntities is an array
 
-            localJson["blocks"].push_back(nljson::object({{"type", "header"}, {"text", {{"type", "plain_text"}, {"text", service + " " + eventTypeCategory + " in region " + region + "(" + awsAccount(account) + ")"}}}}));
+            localJson["blocks"].push_back(nljson::object({{"type", "header"}, {"text", {{"type", "plain_text"}, {"text", headerTitle(service, eventTypeCategory, region, account)}}}}));
 
             auto el = nljson::array();
             el.push_back(nljson::object({{"type", "mrkdwn"}, {"text", "*Event code*: " + eventTypeCode}}));
@@ -67,6 +67,10 @@ void Awshealth::parse(nlohmann::json const& message) {
             json = localJson;
         }
     }
+}
+const std::string Awshealth::headerTitle(std::string &service, std::string &eventTypeCategory, std::string &region, std::string &account) {
+    std::string name = accountName.has_value() ? accountName.value() : account;
+    return service + " " + eventTypeCategory + " in region " + region + "(" + name + ")";
 }
 std::optional<std::string> Awshealth::message() {
     return json.has_value() ? json.value().dump() : std::optional<std::string>{};

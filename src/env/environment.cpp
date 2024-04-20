@@ -26,8 +26,12 @@ std::string Environment::slackOAuthToken() {
     return slackToken;
 }
 
-std::string Environment::accountName() {
-    return awsAccountName->get();
+std::optional<std::string> Environment::accountName() {
+    if (awsAccountName->get() == "") {
+        return std::optional<std::string>{};
+    } else {
+        return awsAccountName->get();
+    }
 }
 
 std::string Environment::slackChannelName() {

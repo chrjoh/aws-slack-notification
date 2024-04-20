@@ -17,6 +17,7 @@ class EnvironmentMock : public Environment {
         slackChannel = std::make_unique<Var<std::string>>("SLACK_CHANNEL", "");
         awsSessionToken = std::make_unique<Var<std::string>>("AWS_SESSION_TOKEN", "");
         thresHold = std::make_unique<Var<double>>("THRESHOLD", 0.0);
+        awsAccountName = std::make_unique<Var<std::string>>("AWS_ACCOUNT_NAME", "");
         onlyLatest = std::make_unique<Var<bool>>("ONLYLATEST", false);
         awsHealthEnventsToSkip = std::make_unique<Var<std::string>>("AWS_HEALTH_EVENTS_TO_SKIP", "");
         if (awsHealthEnventsToSkip->get().size() > 0) {

@@ -23,7 +23,7 @@ std::unique_ptr<Slack> Handler::parseAndCreateSlackMessage(std::string const &pa
             inspector->parse(data);
             return inspector;
         } else if (data.contains("source") && data["source"] == "aws.health") {
-            auto awsHealth = std::make_unique<Awshealth>(slackChannel, env.eventsToSkip());
+            auto awsHealth = std::make_unique<Awshealth>(slackChannel, env.accountName(), env.eventsToSkip());
             awsHealth->parse(data);
             return awsHealth;
         } else if (haveSnSMessage(data)) {

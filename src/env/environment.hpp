@@ -17,7 +17,7 @@ class Environment {
     virtual std::string AWSSessionToken();
     virtual std::string slackChannelName();
     virtual std::string slackOAuthToken();
-    virtual std::string accountName();
+    virtual std::optional<std::string> accountName();
     virtual bool onlyLatestImageTag();
     virtual double inspcetorThresHold();
     std::vector<std::string> eventsToSkip() const;
