@@ -39,7 +39,7 @@ TEST(Handler, Should_return_cloudwatch_alarm_slack_messge) {
     Handler h(std::make_shared<HttpClient>(client), env);
     auto slack = h.parseAndCreateSlackMessage(msg, "slack_channel");
     auto m = slack->message();
-    ASSERT_THAT(m.value(), testing::HasSubstr("AWS CloudWatch Notification"));
+    ASSERT_THAT(m.value(), testing::HasSubstr("AWS CloudWatch Notification in region EU(Ireland)(XXXXXXXXXXX)"));
 }
 
 TEST(Handler, Should_return_guardduty_alert_slack_messge) {

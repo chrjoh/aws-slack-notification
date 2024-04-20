@@ -7,6 +7,7 @@ void Cloudwatch::parse(nlohmann::json const &message) {
     using nljson = nlohmann::json;
     nljson localJson;
     std::string region = message["Region"];
+    std::string account = message["AWSAccountId"];
     std::string subject = "AWS CloudWatch Notification";
     std::string alarmName = message["AlarmName"];
     std::string oldState = message["OldStateValue"];
@@ -34,12 +35,13 @@ void Cloudwatch::parse(nlohmann::json const &message) {
     } else if (newState == "OK") {
         color = "#00FF00";
     }
+    std::string headerSubject = headerTitle(subject, region, account);
     localJson["text"] = "*" + subject + "*";
     localJson["channel"] = channel();
     localJson["attachments"] = nljson::array();
     localJson["attachments"].push_back(nljson::object({{"color", color}}));
     localJson["attachments"][0]["blocks"] = nljson::array();
-    localJson["attachments"][0]["blocks"].push_back(nljson::object({{"type", "header"}, {"text", {{"type", "plain_text"}, {"text", subject}}}}));
+    localJson["attachments"][0]["blocks"].push_back(nljson::object({{"type", "header"}, {"text", {{"type", "plain_text"}, {"text", headerSubject}}}}));
     localJson["attachments"][0]["blocks"].push_back(nljson::object({{"type", "section"}, {"text", {{"type", "mrkdwn"}, {"text", "*Alarm Name*\n" + alarmName}}}}));
     localJson["attachments"][0]["blocks"].push_back(nljson::object({{"type", "section"}, {"text", {{"type", "mrkdwn"}, {"text", "*Alarm Description*\n" + alarmDescription}}}}));
     localJson["attachments"][0]["blocks"].push_back(nljson::object({{"type", "section"}, {"text", {{"type", "mrkdwn"}, {"text", "*Alarm Trigger*\n" + triggerValue}}}}));
