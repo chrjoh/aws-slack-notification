@@ -16,6 +16,7 @@ class Slack {
    public:
     Slack(std::string const &slackChannel, std::optional<std::string> accountName);
     Slack(std::string const &slackChannel, bool const &useErrorMessage);
+    const std::string headerTitle(std::string &service, std::string &region, std::string &account);
     virtual void parse(nlohmann::json const &message);
     virtual std::optional<std::string> message();
     std::string channel();

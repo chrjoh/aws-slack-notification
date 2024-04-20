@@ -30,10 +30,6 @@ void Guardduty::parse(nlohmann::json const &message) {
     }
     json = localJson;
 }
-std::string Guardduty::headerTitle(std::string const &subject, std::string const &region, std::string const &account) {
-    std::string name = accountName.has_value() ? accountName.value() : account;
-    return subject + " in region " + region + "(" + name + ")";
-}
 
 std::optional<std::string> Guardduty::message() {
     return json.has_value() ? json.value().dump() : std::optional<std::string>{};

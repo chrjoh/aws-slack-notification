@@ -34,6 +34,7 @@ void Inspector::parseMessage(nlohmann::json const &message, FindingType const &f
     nljson localJson;
     std::string detailType = message["detail-type"];
     std::string region = message["region"];
+    std::string account = message["account"];
 
     std::string resource = message["resources"][0];
     auto detail = message["detail"];
@@ -54,12 +55,17 @@ void Inspector::parseMessage(nlohmann::json const &message, FindingType const &f
             if ((std::find(begin(tags), end(tags), "latest") == std::end(tags))) {
                 haveLatestTag = false;
             }
-            localJson["blocks"].push_back(nljson::object({{"type", "header"}, {"text", {{"type", "plain_text"}, {"text", detailType + " for ECR image in " + region}}}}));
+            std::string subject = detailType + " for ECR image";
+            std::string headerSubject = headerTitle(subject, region, account);
+            localJson["blocks"].push_back(nljson::object({{"type", "header"}, {"text", {{"type", "plain_text"}, {"text", headerSubject}}}}));
             break;
         }
-        case FindingType::AWS_LAMBDA_FUNCTION:
-            localJson["blocks"].push_back(nljson::object({{"type", "header"}, {"text", {{"type", "plain_text"}, {"text", detailType + " for lambda function in " + region}}}}));
+        case FindingType::AWS_LAMBDA_FUNCTION: {
+            std::string subject = detailType + " for lambda function";
+            std::string headerSubject = headerTitle(subject, region, account);
+            localJson["blocks"].push_back(nljson::object({{"type", "header"}, {"text", {{"type", "plain_text"}, {"text", headerSubject}}}}));
             break;
+        }
         default:
             break;
     }

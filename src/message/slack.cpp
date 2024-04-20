@@ -16,6 +16,11 @@ std::string Slack::channel() {
     return slackChannel;
 }
 
+const std::string Slack::headerTitle(std::string &subject, std::string &region, std::string &account) {
+    std::string name = accountName.has_value() ? accountName.value() : account;
+    return subject + " in region " + region + "(" + name + ")";
+}
+
 void Slack::parse(nlohmann::json const &message) {}
 
 nlohmann::json Slack::getJson() {

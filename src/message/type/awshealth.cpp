@@ -32,8 +32,9 @@ void Awshealth::parse(nlohmann::json const &message) {
             std::string affectedAccount = detail["affectedAccount"];  // my differ with account if in org
 
             // affectedEntities is an array
+            std::string headerSubject = service + " " + eventTypeCategory;
 
-            localJson["blocks"].push_back(nljson::object({{"type", "header"}, {"text", {{"type", "plain_text"}, {"text", headerTitle(service, eventTypeCategory, region, account)}}}}));
+            localJson["blocks"].push_back(nljson::object({{"type", "header"}, {"text", {{"type", "plain_text"}, {"text", headerTitle(headerSubject, region, account)}}}}));
 
             auto el = nljson::array();
             el.push_back(nljson::object({{"type", "mrkdwn"}, {"text", "*Event code*: " + eventTypeCode}}));
@@ -68,10 +69,7 @@ void Awshealth::parse(nlohmann::json const &message) {
         }
     }
 }
-const std::string Awshealth::headerTitle(std::string &service, std::string &eventTypeCategory, std::string &region, std::string &account) {
-    std::string name = accountName.has_value() ? accountName.value() : account;
-    return service + " " + eventTypeCategory + " in region " + region + "(" + name + ")";
-}
+
 std::optional<std::string> Awshealth::message() {
     return json.has_value() ? json.value().dump() : std::optional<std::string>{};
 }

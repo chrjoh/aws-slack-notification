@@ -11,7 +11,7 @@ class Awshealth : public Slack {
    public:
     Awshealth(std::string const &slackChannel, std::optional<std::string> accountName, std::vector<std::string> types = {});
     void parse(nlohmann::json const &message);
-    const std::string headerTitle(std::string &service, std::string &eventTypeCategory, std::string &region, std::string &account);
+
     std::optional<std::string> message();
     ~Awshealth() = default;
     bool skipEventType(std::string type);
