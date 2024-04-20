@@ -1,6 +1,6 @@
 #include "cloudwatch.hpp"
 
-Cloudwatch::Cloudwatch(std::string const &slackChannel) : Slack(slackChannel) {
+Cloudwatch::Cloudwatch(std::string const &slackChannel, std::optional<std::string> accountName) : Slack(slackChannel, accountName) {
 }
 
 void Cloudwatch::parse(nlohmann::json const &message) {

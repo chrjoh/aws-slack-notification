@@ -11,10 +11,11 @@
 
 class Cloudwatch : public Slack {
    private:
+    std::optional<std::string> accountName;
     virtual char *currentTime();
 
    public:
-    Cloudwatch(std::string const &slackChannel);
+    Cloudwatch(std::string const &slackChannel, std::optional<std::string> accountName);
     void parse(nlohmann::json const &message);
     std::optional<std::string> message();
     virtual ~Cloudwatch();

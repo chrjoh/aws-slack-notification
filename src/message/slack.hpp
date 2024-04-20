@@ -9,11 +9,12 @@ class Slack {
    protected:
     std::optional<nlohmann::json> json;
     std::string slackChannel;
+    std::optional<std::string> accountName;
     bool useErrorMessage = false;
     std::string CreateErrorMessage();
 
    public:
-    Slack(std::string const &slackChannel);
+    Slack(std::string const &slackChannel, std::optional<std::string> accountName);
     Slack(std::string const &slackChannel, bool const &useErrorMessage);
     virtual void parse(nlohmann::json const &message);
     virtual std::optional<std::string> message();

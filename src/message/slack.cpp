@@ -1,6 +1,6 @@
 #include "slack.hpp"
 
-Slack::Slack(std::string const &slackChannel) : slackChannel(slackChannel) {
+Slack::Slack(std::string const &slackChannel, std::optional<std::string> accountName) : slackChannel(slackChannel), accountName(accountName) {
 }
 
 Slack::Slack(std::string const &slackChannel, bool const &useErrorMessage) : slackChannel(slackChannel), useErrorMessage(useErrorMessage) {

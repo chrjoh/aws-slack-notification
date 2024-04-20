@@ -18,7 +18,7 @@ class Awshealth : public Slack {
 
    private:
     std::vector<std::string> eventTypes;
-    std::optional<std::string> accountName;
+
     std::string awsAccount(std::string accountID);
     std::string getDescription(nlohmann::json::array_t desc);
 };

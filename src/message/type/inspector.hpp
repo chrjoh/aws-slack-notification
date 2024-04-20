@@ -20,7 +20,7 @@ class Inspector : public Slack {
     void parseMessage(nlohmann::json const &message, FindingType const &resourceType);
 
    public:
-    Inspector(bool const &onlyLatest, double const &serverityThreshold, std::string const &slackChannel);
+    Inspector(bool const &onlyLatest, double const &serverityThreshold, std::string const &slackChannel, std::optional<std::string> accountName);
     void parse(nlohmann::json const &message);
     std::optional<std::string> message();
     ~Inspector();

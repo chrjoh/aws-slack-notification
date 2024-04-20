@@ -1,7 +1,7 @@
 #include "inspector.hpp"
 
-Inspector::Inspector(bool const &onlyLatest, double const &serverityThreshold, std::string const &slackChannel)
-    : onlyLatest(onlyLatest), serverityThreshold(serverityThreshold), Slack(slackChannel) {
+Inspector::Inspector(bool const &onlyLatest, double const &serverityThreshold, std::string const &slackChannel, std::optional<std::string> accountName)
+    : onlyLatest(onlyLatest), serverityThreshold(serverityThreshold), Slack(slackChannel, accountName) {
 }
 
 void Inspector::parse(nlohmann::json const &message) {

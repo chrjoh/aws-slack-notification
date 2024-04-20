@@ -1,6 +1,6 @@
 #include "awshealth.hpp"
 
-Awshealth::Awshealth(std::string const &slackChannel, std::optional<std::string> accountName, std::vector<std::string> types) : Slack(slackChannel), accountName(accountName), eventTypes(types) {
+Awshealth::Awshealth(std::string const &slackChannel, std::optional<std::string> accountName, std::vector<std::string> types) : Slack(slackChannel, accountName), eventTypes(types) {
 }
 
 void Awshealth::parse(nlohmann::json const &message) {

@@ -15,11 +15,11 @@ std::unique_ptr<Slack> Handler::parseAndCreateSlackMessage(std::string const &pa
     try {
         auto data = json.parse(payload, nullptr, true);
         if (data.contains("source") && data["source"] == "aws.guardduty") {
-            auto guardDuty = std::make_unique<Guardduty>(slackChannel);
+            auto guardDuty = std::make_unique<Guardduty>(slackChannel, env.accountName());
             guardDuty->parse(data);
             return guardDuty;
         } else if (data.contains("source") && data["source"] == "aws.inspector2") {
-            auto inspector = std::make_unique<Inspector>(env.onlyLatestImageTag(), env.inspcetorThresHold(), slackChannel);
+            auto inspector = std::make_unique<Inspector>(env.onlyLatestImageTag(), env.inspcetorThresHold(), slackChannel, env.accountName());
             inspector->parse(data);
             return inspector;
         } else if (data.contains("source") && data["source"] == "aws.health") {
@@ -30,7 +30,7 @@ std::unique_ptr<Slack> Handler::parseAndCreateSlackMessage(std::string const &pa
             std::string SnSmessage = data["Records"][0]["Sns"]["Message"];
             auto message = json.parse(SnSmessage);
             if (message.contains("AlarmName")) {
-                auto cloudwatch = std::make_unique<Cloudwatch>(slackChannel);
+                auto cloudwatch = std::make_unique<Cloudwatch>(slackChannel, env.accountName());
                 cloudwatch->parse(message);
                 return cloudwatch;
             }
@@ -41,7 +41,7 @@ std::unique_ptr<Slack> Handler::parseAndCreateSlackMessage(std::string const &pa
                   << ex.what() << std::endl;
         return std::make_unique<Slack>(slackChannel, true);
     }
-    return std::make_unique<Slack>(slackChannel);
+    return std::make_unique<Slack>(slackChannel, std::optional<std::string>{});
 }
 
 Handler::~Handler() {
