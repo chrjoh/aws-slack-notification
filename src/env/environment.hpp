@@ -13,13 +13,13 @@ class Environment {
     Environment(){};
     std::vector<std::string> getStrings(std::string s, std::string del);
     // virtual ~Environment();
-    virtual std::string OAuthTokenName();
-    virtual std::string AWSSessionToken();
-    virtual std::string slackChannelName();
-    virtual std::string slackOAuthToken();
-    virtual std::optional<std::string> accountName();
-    virtual bool onlyLatestImageTag();
-    virtual double inspcetorThresHold();
+    virtual std::string OAuthTokenName() const;
+    virtual std::string AWSSessionToken() const;
+    virtual std::string slackChannelName() const;
+    virtual std::string slackOAuthToken() const;
+    virtual std::optional<std::string> accountName() const;
+    virtual bool onlyLatestImageTag() const;
+    virtual double inspcetorThresHold() const;
     std::vector<std::string> eventsToSkip() const;
 
    protected:

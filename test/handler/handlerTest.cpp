@@ -24,7 +24,7 @@ class EnvironmentMock : public Environment {
             eventTypes = getStrings(awsHealthEnventsToSkip->get(), ",");
         }
     };
-    MOCK_METHOD(std::string, slackOAuthToken, (), (override));
+    MOCK_METHOD(std::string, slackOAuthToken, (), (const, override));
 };
 
 class TestHandler : public Handler {

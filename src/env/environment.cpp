@@ -14,19 +14,19 @@ Environment::Environment(std::shared_ptr<HttpClient> httpclient) : httpclient(ht
     auto Doc = httpclient->doGetSecretParameter(parameterUrl, AWSSessionToken(), Params{{"withDecryption", "true"}, {"name", OAuthTokenName()}});
     slackToken = Doc["Parameter"]["Value"];
 }
-std::string Environment::OAuthTokenName() {
+std::string Environment::OAuthTokenName() const {
     return oAuthKey->get();
 }
 
-std::string Environment::AWSSessionToken() {
+std::string Environment::AWSSessionToken() const {
     return awsSessionToken->get();
 }
 
-std::string Environment::slackOAuthToken() {
+std::string Environment::slackOAuthToken() const {
     return slackToken;
 }
 
-std::optional<std::string> Environment::accountName() {
+std::optional<std::string> Environment::accountName() const {
     if (awsAccountName->get() == "") {
         return std::optional<std::string>{};
     } else {
@@ -34,15 +34,15 @@ std::optional<std::string> Environment::accountName() {
     }
 }
 
-std::string Environment::slackChannelName() {
+std::string Environment::slackChannelName() const {
     return slackChannel->get();
 }
 
-bool Environment::onlyLatestImageTag() {
+bool Environment::onlyLatestImageTag() const {
     return onlyLatest->get();
 }
 
-double Environment::inspcetorThresHold() {
+double Environment::inspcetorThresHold() const {
     return thresHold->get();
 }
 

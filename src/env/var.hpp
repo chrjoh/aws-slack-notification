@@ -9,13 +9,13 @@ template <typename T>
 class Var {
    private:
     T value;
-    virtual std::optional<std::string> getEnvVar(std::string const &key);
+    virtual std::optional<std::string> getEnvVar(std::string const &key) const;
     void setValue(std::optional<std::string> &var);
 
    public:
     Var(std::string const &name);
     Var(std::string const &name, T v);
-    T get();
+    T get() const;
 
     virtual ~Var() = default;
 };
@@ -58,12 +58,12 @@ void Var<T>::setValue(std::optional<std::string> &var) {
 }
 
 template <typename T>
-T Var<T>::get() {
+T Var<T>::get() const {
     return value;
 }
 
 template <typename T>
-std::optional<std::string> Var<T>::getEnvVar(std::string const &key) {
+std::optional<std::string> Var<T>::getEnvVar(std::string const &key) const {
     char const *val = getenv(key.c_str());
     if (val == NULL) {
         return {};

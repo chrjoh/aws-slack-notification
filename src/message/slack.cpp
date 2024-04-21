@@ -16,7 +16,7 @@ std::string Slack::channel() {
     return slackChannel;
 }
 
-const std::string Slack::headerTitle(std::string &subject, std::string &region, std::string &account) {
+std::string Slack::headerTitle(std::string const &subject, std::string const &region, std::string const &account) const {
     std::string name = accountName.has_value() ? accountName.value() : account;
     return subject + " in region " + region + "(" + name + ")";
 }

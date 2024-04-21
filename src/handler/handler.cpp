@@ -47,6 +47,6 @@ std::unique_ptr<Slack> Handler::parseAndCreateSlackMessage(std::string const &pa
 Handler::~Handler() {
 }
 // private methods
-bool Handler::haveSnSMessage(nlohmann::json &data) {
+bool Handler::haveSnSMessage(nlohmann::json &data) const {
     return data.contains("Records") && data["Records"].size() > 0 && data["Records"][0].contains("Sns");
 }

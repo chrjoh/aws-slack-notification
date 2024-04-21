@@ -19,7 +19,7 @@ class Handler {
     std::string const slackUrl = "https://slack.com/api/chat.postMessage";
     std::string const parameterUrl = "http://localhost:2773/systemsmanager/parameters/get";
     std::shared_ptr<HttpClient> httpclient;
-    bool haveSnSMessage(nlohmann::json &data);
+    bool haveSnSMessage(nlohmann::json &data) const;
     Environment env;
 
    public:

@@ -14,11 +14,11 @@ class Awshealth : public Slack {
 
     std::optional<std::string> message();
     ~Awshealth() = default;
-    bool skipEventType(std::string type);
+    bool skipEventType(std::string const &type) const;
 
    private:
     std::vector<std::string> eventTypes;
 
-    std::string awsAccount(std::string accountID);
-    std::string getDescription(nlohmann::json::array_t desc);
+    std::string awsAccount(std::string const &accountID) const;
+    std::string getDescription(nlohmann::json::array_t const &desc) const;
 };
