@@ -74,10 +74,6 @@ std::optional<std::string> Awshealth::message() {
     return json.has_value() ? json.value().dump() : std::optional<std::string>{};
 }
 
-std::string Awshealth::awsAccount(std::string const &accountID) const {
-    return accountID;
-}
-
 std::string Awshealth::getDescription(nlohmann::json::array_t const &desc) const {
     auto it = std::find_if(begin(desc), end(desc), [](auto el) {
         return static_cast<std::string>(el["language"]).rfind("en") == 0;
@@ -86,6 +82,6 @@ std::string Awshealth::getDescription(nlohmann::json::array_t const &desc) const
     return std::end(desc) == it ? "" : (*it)["latestDescription"];
 }
 
-bool Awshealth::skipEventType(std::string const &type) const {
+bool Awshealth::skipEventType(std::string_view type) const {
     return (std::find(begin(eventTypes), end(eventTypes), type) != std::end(eventTypes));
 }

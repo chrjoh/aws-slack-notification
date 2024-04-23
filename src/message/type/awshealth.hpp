@@ -3,6 +3,7 @@
 #include <numeric>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "slack.hpp"
@@ -14,11 +15,10 @@ class Awshealth : public Slack {
 
     std::optional<std::string> message();
     ~Awshealth() = default;
-    bool skipEventType(std::string const &type) const;
+    bool skipEventType(std::string_view type) const;
 
    private:
     std::vector<std::string> eventTypes;
 
-    std::string awsAccount(std::string const &accountID) const;
     std::string getDescription(nlohmann::json::array_t const &desc) const;
 };
