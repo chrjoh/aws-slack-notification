@@ -25,8 +25,9 @@ void Cloudwatch::parse(nlohmann::json const &message) {
         std::string comparisonOperator = trigger["ComparisonOperator"];
         triggerValue = statistic + " " + metricName + " " + comparisonOperator + " " + std::to_string(thresHold) + " for " + std::to_string(evaluationPeriods) + " period(s) of " + std::to_string(period) + " seconds.";
     }
+    auto awsRegion = regionFromAlarmArn(message["AlarmArn"]);
     char *escapedAlarmName = curl_easy_escape(NULL, alarmName.c_str(), alarmName.size());
-    char *escapedRegion = curl_easy_escape(NULL, region.c_str(), region.size());
+    char *escapedRegion = curl_easy_escape(NULL, awsRegion.c_str(), awsRegion.size());
     std::string alarmLink = "https://console.aws.amazon.com/cloudwatch/home?region=" + std::string(escapedRegion) + "#alarm:alarmFilter=ANY;name=" + std::string(escapedAlarmName);
     curl_free(escapedAlarmName);
     curl_free(escapedRegion);
@@ -72,4 +73,24 @@ Cloudwatch::~Cloudwatch() {
 char *Cloudwatch::currentTime() {
     std::time_t currentTime = std::time(nullptr);
     return std::asctime(std::localtime(&currentTime));
+}
+
+std::string Cloudwatch::regionFromAlarmArn(std::string s) {
+    std::vector<std::string> res;
+    int pos_start = 0, pos_end, delim_len = 1;
+    std::string token;
+    while ((pos_end = s.find(":", pos_start)) != std::string::npos) {
+        token = s.substr(pos_start, pos_end - pos_start);
+        // remove white spaces
+        token.erase(std::remove_if(token.begin(), token.end(), ::isspace), token.end());
+        pos_start = pos_end + delim_len;
+        res.push_back(token);
+    }
+    // get the last entry and handle trailing delimeter
+    token = s.substr(pos_start);
+    token.erase(std::remove_if(token.begin(), token.end(), ::isspace), token.end());
+    if (token.size() > 0) {
+        res.push_back(token);
+    }
+    return res[3];
 }

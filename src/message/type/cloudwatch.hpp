@@ -13,6 +13,7 @@ class Cloudwatch : public Slack {
    private:
     std::optional<std::string> accountName;
     virtual char *currentTime();
+    std::string regionFromAlarmArn(std::string);
 
    public:
     Cloudwatch(std::string const &slackChannel, std::optional<std::string> accountName);
