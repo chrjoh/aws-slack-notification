@@ -1,5 +1,8 @@
 #include "inspector.hpp"
 
+#include <iomanip>
+#include <sstream>
+
 Inspector::Inspector(bool const &onlyLatest, double const &serverityThreshold, std::string const &slackChannel, std::optional<std::string> accountName)
     : onlyLatest(onlyLatest), serverityThreshold(serverityThreshold), Slack(slackChannel, accountName) {
 }
@@ -41,7 +44,10 @@ void Inspector::parseMessage(nlohmann::json const &message, FindingType const &f
     std::string description = detail["description"];
     std::string exploitAvailable = detail["exploitAvailable"];
     std::string fixAvailable = detail["fixAvailable"];
-    float inspectorScore = detail["inspectorScore"];
+    float score = detail["inspectorScore"];
+    std::stringstream s;
+    s << std::setprecision(2) << score;
+    std::string inspectorScore = s.str();
     std::string severity = detail["severity"];
     std::string vulnerability = detail["title"];
 
@@ -78,10 +84,10 @@ void Inspector::parseMessage(nlohmann::json const &message, FindingType const &f
     fields.push_back(nljson::object({{"type", "mrkdwn"}, {"text", "*Exploit available*\n" + exploitAvailable}}));
     fields.push_back(nljson::object({{"type", "mrkdwn"}, {"text", "*Fix Available*\n" + fixAvailable}}));
     fields.push_back(nljson::object({{"type", "mrkdwn"}, {"text", "*Severity*\n" + severity}}));
-    fields.push_back(nljson::object({{"type", "mrkdwn"}, {"text", "*Inspector score*\n" + std::to_string(inspectorScore)}}));
+    fields.push_back(nljson::object({{"type", "mrkdwn"}, {"text", "*Inspector score*\n" + inspectorScore}}));
     localJson["blocks"].push_back(nljson::object({{"type", "section"}, {"fields", fields}}));
 
-    if (inspectorScore >= serverityThreshold) {
+    if (score >= serverityThreshold) {
         if (onlyLatest && !haveLatestTag) {
             json = {};
         } else {
