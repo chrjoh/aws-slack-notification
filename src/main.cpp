@@ -18,6 +18,8 @@ invocation_response my_handler(invocation_request const& request) {
         std::string payload = request.payload;
         handler.process(payload);
     } catch (const std::exception& ex) {
+        std::cerr << request.payload << std::endl;
+        std::cerr << ex.what() << std::endl;
         return invocation_response::failure("Failed to handle message", ex.what());
     }
 

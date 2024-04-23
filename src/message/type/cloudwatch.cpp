@@ -12,7 +12,7 @@ void Cloudwatch::parse(nlohmann::json const &message) {
     std::string alarmName = message["AlarmName"];
     std::string oldState = message["OldStateValue"];
     std::string newState = message["NewStateValue"];
-    std::string alarmDescription = message["AlarmDescription"];
+    std::string alarmDescription = message.contains("AlarmDescription") && !message["AlarmDescription"].is_null() ? message["AlarmDescription"] : "";
 
     std::string triggerValue;
     if (message.contains("Trigger")) {
@@ -21,7 +21,9 @@ void Cloudwatch::parse(nlohmann::json const &message) {
         float thresHold = trigger["Threshold"];
         int evaluationPeriods = trigger["EvaluationPeriods"];
         int period = trigger["Period"];
-        triggerValue = std::string(trigger["Statistic"]) + " " + metricName + " " + std::string(trigger["ComparisonOperator"]) + " " + std::to_string(thresHold) + " for " + std::to_string(evaluationPeriods) + " period(s) of " + std::to_string(period) + " seconds.";
+        std::string statistic = trigger["Statistic"];
+        std::string comparisonOperator = trigger["ComparisonOperator"];
+        triggerValue = statistic + " " + metricName + " " + comparisonOperator + " " + std::to_string(thresHold) + " for " + std::to_string(evaluationPeriods) + " period(s) of " + std::to_string(period) + " seconds.";
     }
     char *escapedAlarmName = curl_easy_escape(NULL, alarmName.c_str(), alarmName.size());
     char *escapedRegion = curl_easy_escape(NULL, region.c_str(), region.size());
