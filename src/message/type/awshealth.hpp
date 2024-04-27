@@ -10,8 +10,8 @@
 
 class Awshealth : public Slack {
    public:
-    Awshealth(std::string const &slackChannel, std::optional<std::string> accountName, std::vector<std::string> types = {});
-    void parse(nlohmann::json const &message);
+    Awshealth(std::string const& slackChannel, std::optional<std::string> accountName, std::vector<std::string> types = {});
+    void parse(nlohmann::json const& message);
 
     std::optional<std::string> message();
     ~Awshealth() = default;
@@ -19,6 +19,6 @@ class Awshealth : public Slack {
 
    private:
     std::vector<std::string> eventTypes;
-
-    std::string getDescription(nlohmann::json::array_t const &desc) const;
+    void replaceAll(std::string& str, const std::string& from, const std::string& to);
+    std::string getDescription(nlohmann::json::array_t const& desc) const;
 };

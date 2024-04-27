@@ -8,6 +8,7 @@ int HttpClient::doPostToSlack(std::string const& url, std::string const& token, 
     CURLcode ret;
     CURL* hnd;
     struct curl_slist* slist;
+
     std::string auth = "Authorization: Bearer " + token;
     slist = NULL;
     slist = curl_slist_append(slist, "Content-Type: application/json");
@@ -26,12 +27,19 @@ int HttpClient::doPostToSlack(std::string const& url, std::string const& token, 
     curl_easy_setopt(hnd, CURLOPT_TCP_KEEPALIVE, 1L);
 
     ret = curl_easy_perform(hnd);
+
+    long http_code = 0;
+    curl_easy_getinfo(hnd, CURLINFO_RESPONSE_CODE, &http_code);
+    if (http_code != 200) {
+        std::cerr << "Error sending data to slack, status code: " << std::to_string(http_code) << std::endl;
+    }
     curl_easy_cleanup(hnd);
     curl_slist_free_all(slist);
     return ret;
 }
 
 nlohmann::json HttpClient::doGetSecretParameter(std::string const& url, std::string const& token, Params const& params) {
+    using namespace std::chrono_literals;
     CURLcode ret;
     CURL* hnd;
     struct curl_slist* slist;
@@ -53,13 +61,41 @@ nlohmann::json HttpClient::doGetSecretParameter(std::string const& url, std::str
     slist = curl_slist_append(slist, "Accept: application/json");
     slist = curl_slist_append(slist, auth.c_str());
     curl_easy_setopt(hnd, CURLOPT_HTTPHEADER, slist);
+    const int max_attempts = 10;
 
-    ret = curl_easy_perform(hnd);
+    long http_code = 0;
+    for (int i = 1; i <= max_attempts; i++) {
+        ret = curl_easy_perform(hnd);
+        if (ret == CURLE_OK) {
+            curl_easy_getinfo(hnd, CURLINFO_RESPONSE_CODE, &http_code);
+            if (http_code == 200) {
+                break;
+            }
+        }
+        /*
+         * Lambda layer have not started webserver so sleep
+         * and clear the result string from any junk data
+         */
+        resultBody.clear();
+        std::this_thread::sleep_for(2000ms);
+    }
     nlohmann::json Doc;
     if (ret != CURLE_OK) {
         fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(ret));
     } else {
-        Doc = nlohmann::json::parse(resultBody);
+        if (http_code == 200) {
+            try {
+                Doc = nlohmann::json::parse(resultBody);
+            } catch (const std::exception& ex) {
+                std::cerr << "Error parsing ssm parameter json" << std::endl;
+                std::cerr << "ResultBody: " << resultBody << std::endl;
+                throw(std::domain_error("Failed to parse ssm json"));
+            }
+        } else {
+            std::cerr << "Failed to fetch ssm parameter with curl http status error code: " + std::to_string(http_code) << std::endl;
+            std::cerr << "resultBody: " << resultBody << std::endl;
+            throw(std::domain_error("Failed to fetch ssm data with curl, http status: " + std::to_string(http_code)));
+        }
     }
 
     curl_easy_cleanup(hnd);

@@ -32,6 +32,7 @@ COPY ./src/ ./src/
 COPY ./test/ ./test/
 COPY CMakeLists.txt .
 RUN  cmake -B build -S . -DVCPKG_BUILD_TYPE=release -DCMAKE_BUILD_TYPE=Release -DBUILD_TYPE=Release
+#RUN  cmake -B build -S . 
 WORKDIR /home/root/_src/build
 RUN  cmake --build .
 RUN ctest

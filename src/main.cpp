@@ -15,11 +15,15 @@ invocation_response my_handler(invocation_request const& request) {
         HttpClient client;
         Environment env{std::make_shared<HttpClient>(client)};
         Handler handler(std::make_shared<HttpClient>(client), env);
-        std::string payload = request.payload;
-        handler.process(payload);
+        if (request.payload.size() > 0) {
+            std::string payload = request.payload;
+            // std::cerr << request.payload << std::endl;
+            handler.process(payload);
+        }
     } catch (const std::exception& ex) {
-        std::cerr << request.payload << std::endl;
-        std::cerr << ex.what() << std::endl;
+        std::cerr << "ERROR handling payload" << std::endl;
+        std::cerr << "payload: " << request.payload << std::endl;
+        std::cerr << "exception: " << ex.what() << std::endl;
         return invocation_response::failure("Failed to handle message", ex.what());
     }
 

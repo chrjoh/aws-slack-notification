@@ -35,7 +35,7 @@ Var<T>::Var(std::string const &name) {
     if (var.has_value()) {
         setValue(var);
     } else {
-        throw(std::domain_error("missing mandatory environmen variable: " + name));
+        throw(std::domain_error("missing mandatory environment variable: " + name));
     }
 }
 

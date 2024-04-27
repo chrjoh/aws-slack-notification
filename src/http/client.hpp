@@ -1,9 +1,11 @@
 #pragma once
 #include <curl/curl.h>
 
+#include <chrono>
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <thread>
 #include <vector>
 
 typedef std::map<std::string, std::string> Params;

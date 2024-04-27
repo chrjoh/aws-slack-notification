@@ -51,10 +51,13 @@ void Awshealth::parse(nlohmann::json const &message) {
             localJson["blocks"].push_back(nljson::object({{"type", "context"}, {"elements", el}}));
 
             el = nljson::array();
-            el.push_back(nljson::object({{"type", "mrkdwn"}, {"text", "*Affected resources*: " + resources}}));
+            el.push_back(nljson::object({{"type", "mrkdwn"}, {"text", "*Affected resources*: `" + resources + "`"}}));
             localJson["blocks"].push_back(nljson::object({{"type", "context"}, {"elements", el}}));
 
             auto desc = getDescription(detail["eventDescription"]);
+            const std::string from{"\\\\n"};
+            const std::string to{"\\n"};
+            replaceAll(desc, from, to);
             localJson["blocks"]
                 .push_back(nljson::object({{"type", "section"}, {"text", {{"type", "mrkdwn"}, {"text", desc}}}}));
 
@@ -82,6 +85,15 @@ std::string Awshealth::getDescription(nlohmann::json::array_t const &desc) const
     return std::end(desc) == it ? "" : (*it)["latestDescription"];
 }
 
+void Awshealth::replaceAll(std::string &str, const std::string &from, const std::string &to) {
+    if (from.empty())
+        return;
+    size_t start_pos = 0;
+    while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length();  // In case 'to' contains 'from', like replacing 'x' with 'yx'
+    }
+}
 bool Awshealth::skipEventType(std::string_view type) const {
     return (std::find(begin(eventTypes), end(eventTypes), type) != std::end(eventTypes));
 }

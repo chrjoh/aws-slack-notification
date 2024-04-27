@@ -12,7 +12,12 @@ Environment::Environment(std::shared_ptr<HttpClient> httpclient) : httpclient(ht
         eventTypes = getStrings(awsHealthEnventsToSkip->get(), ",");
     }
     auto Doc = httpclient->doGetSecretParameter(parameterUrl, AWSSessionToken(), Params{{"withDecryption", "true"}, {"name", OAuthTokenName()}});
-    slackToken = Doc["Parameter"]["Value"];
+    if (Doc.contains("Parameter") && Doc["Parameter"].contains("Value")) {
+        slackToken = Doc["Parameter"]["Value"];
+    } else {
+        std::cerr << "Failed to fetch SSM parameter from localhost" << std::endl;
+        throw(std::domain_error("Failed to fetch SSM parameter"));
+    }
 }
 std::string Environment::OAuthTokenName() const {
     return oAuthKey->get();
