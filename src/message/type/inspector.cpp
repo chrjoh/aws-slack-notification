@@ -13,6 +13,9 @@ void Inspector::parse(nlohmann::json const &message) {
         case FindingType::AWS_LAMBDA_FUNCTION:
             parseLambdaMessage(message);
             break;
+        case FindingType::AWS_EC2_INSTANCE:
+            parseEC2Message(message);
+            break;
         case FindingType::INITIAL_SCAN_COMPLETE:
             parseInitialScanMessage(message);
             break;
@@ -31,6 +34,8 @@ Inspector::FindingType Inspector::typeOffinding(nlohmann::json const &message) {
             return FindingType::AWS_LAMBDA_FUNCTION;
         } else if (message["detail"]["resources"][0]["type"] == "AWS_ECR_CONTAINER_IMAGE") {
             return FindingType::AWS_ECR_CONTAINER_IMAGE;
+        } else if (message["detail"]["resources"][0]["type"] == "AWS_EC2_INSTANCE") {
+            return FindingType::AWS_EC2_INSTANCE;
         }
     } else if (message.contains("detail") && message["detail"].contains("scan-status") && message["detail"]["scan-status"] == "INITIAL_SCAN_COMPLETE") {
         return FindingType::INITIAL_SCAN_COMPLETE;
@@ -98,7 +103,7 @@ void Inspector::parseECRMessage(nlohmann::json const &message) {
         if (onlyLatest && !haveLatestTag) {
             json = {};
         } else {
-            createECRorLambdaSlackMessage(localJson, extracted);
+            createFindingSlackMessage(localJson, extracted);
             json = localJson;
         }
     }
@@ -112,12 +117,24 @@ void Inspector::parseLambdaMessage(nlohmann::json const &message) {
     extracted.subject = extracted.detailType + " for lambda function";
 
     if (extracted.score >= serverityThreshold) {
-        createECRorLambdaSlackMessage(localJson, extracted);
+        createFindingSlackMessage(localJson, extracted);
+        json = localJson;
+    }
+}
+void Inspector::parseEC2Message(nlohmann::json const &message) {
+    using nljson = nlohmann::json;
+    nljson localJson;
+
+    Inspector::Message extracted{message};
+    extracted.subject = extracted.detailType + " for EC2 instance";
+
+    if (extracted.score >= serverityThreshold) {
+        createFindingSlackMessage(localJson, extracted);
         json = localJson;
     }
 }
 
-void Inspector::createECRorLambdaSlackMessage(nlohmann::json &localJson, Inspector::Message const &extracted) {
+void Inspector::createFindingSlackMessage(nlohmann::json &localJson, Inspector::Message const &extracted) {
     using nljson = nlohmann::json;
     localJson["text"] = "*" + extracted.detailType + " in " + extracted.region + "*";
     localJson["channel"] = channel();
@@ -127,6 +144,9 @@ void Inspector::createECRorLambdaSlackMessage(nlohmann::json &localJson, Inspect
 
     localJson["blocks"].push_back(nljson::object({{"type", "section"}, {"text", {{"type", "mrkdwn"}, {"text", "*Description*\n" + extracted.description}}}}));
     localJson["blocks"].push_back(nljson::object({{"type", "section"}, {"text", {{"type", "mrkdwn"}, {"text", "*Vulnerability*\n" + extracted.vulnerability}}}}));
+    if (extracted.recommendation.size() > 0) {
+        localJson["blocks"].push_back(nljson::object({{"type", "section"}, {"text", {{"type", "mrkdwn"}, {"text", "*Recommendation*\n" + extracted.recommendation}}}}));
+    }
     localJson["blocks"].push_back(nljson::object({{"type", "section"}, {"text", {{"type", "mrkdwn"}, {"text", "*Resource*\n`" + extracted.resource + "`"}}}}));
 
     auto fields = nljson::array();
@@ -147,8 +167,11 @@ Inspector::Message::Message(nlohmann::json const &message) {
     resource = message["resources"][0];
     auto detail = message["detail"];
     description = detail["description"];
-    exploitAvailable = detail["exploitAvailable"];
-    fixAvailable = detail["fixAvailable"];
+    exploitAvailable = detail.contains("exploitAvailable") ? detail["exploitAvailable"] : "--";
+    fixAvailable = detail.contains("fixAvailable") ? detail["fixAvailable"] : "--";
+    if (detail.contains("remediation") && detail["remediation"].contains("recommendation")) {
+        recommendation = detail["remediation"]["recommendation"]["text"];
+    }
     inspectorScore = "--";
     if (detail.contains("inspectorScore")) {
         score = detail["inspectorScore"];

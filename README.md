@@ -5,8 +5,10 @@ Currently supports:
 
 - GuardDuty from event bridge
 - AWS health from event bridge
-- Inspector2 alerts from event bridge
-  - currentrly handle ECR, finnding, summary and lambda events
+- Inspector2 alerts from event bridge, types handled 
+    - ECR, finding and summary 
+    - lambda events
+    - EC2 instances
 - Cloudwatch Alarm from SNS 
 
 ### Usage

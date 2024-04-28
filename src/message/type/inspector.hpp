@@ -17,6 +17,7 @@ class Inspector : public Slack {
     enum class FindingType { AWS_LAMBDA_FUNCTION,
                              AWS_ECR_CONTAINER_IMAGE,
                              INITIAL_SCAN_COMPLETE,
+                             AWS_EC2_INSTANCE,
                              UNKNOWN };
 
     class Message {
@@ -31,6 +32,7 @@ class Inspector : public Slack {
         std::string fixAvailable;
         float score{0};
         std::string inspectorScore = "--";
+        std::string recommendation;
         std::string severity;
         std::string vulnerability;
         std::string subject;
@@ -40,8 +42,9 @@ class Inspector : public Slack {
     bool hasFindingResources(nlohmann::json const &message);
     void parseLambdaMessage(nlohmann::json const &message);
     void parseECRMessage(nlohmann::json const &message);
+    void parseEC2Message(nlohmann::json const &message);
     void parseInitialScanMessage(nlohmann::json const &message);
-    void createECRorLambdaSlackMessage(nlohmann::json &localJson, Inspector::Message const &extracted);
+    void createFindingSlackMessage(nlohmann::json &localJson, Inspector::Message const &extracted);
 
    public:
     Inspector(bool const &onlyLatest, double const &serverityThreshold, std::string const &slackChannel, std::optional<std::string> accountName);
