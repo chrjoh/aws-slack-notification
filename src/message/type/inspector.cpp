@@ -60,19 +60,21 @@ void Inspector::parseInitialScanMessage(nlohmann::json const &message) {
     localJson["channel"] = channel();
     localJson["blocks"] = nljson::array();
 
-    auto tags = detail["image-tags"].get<std::vector<std::string>>();
-    if ((std::find(begin(tags), end(tags), "latest") == std::end(tags))) {
-        haveLatestTag = false;
+    if (detail.contains("image-tags")) {
+        auto tags = detail["image-tags"].get<std::vector<std::string>>();
+        if ((std::find(begin(tags), end(tags), "latest") == std::end(tags))) {
+            haveLatestTag = false;
+        }
     }
-
     if (!onlyLatest || (onlyLatest && haveLatestTag)) {
         std::string subject = detailType;
         std::string headerSubject = headerTitle(subject, region, account);
-        std::string repositoryName = detail["repository-name"];
         auto findinfSeveritys = detail["finding-severity-counts"];
         localJson["blocks"].push_back(nljson::object({{"type", "header"}, {"text", {{"type", "plain_text"}, {"text", headerSubject}}}}));
-        localJson["blocks"].push_back(nljson::object({{"type", "section"}, {"text", {{"type", "mrkdwn"}, {"text", "*Repository*\n`" + repositoryName + "`"}}}}));
-
+        if (detail.contains("repository-name")) {
+            std::string repositoryName = detail["repository-name"];
+            localJson["blocks"].push_back(nljson::object({{"type", "section"}, {"text", {{"type", "mrkdwn"}, {"text", "*Repository*\n`" + repositoryName + "`"}}}}));
+        }
         auto fields = nljson::array();
         long critical = findinfSeveritys["CRITICAL"];
         long high = findinfSeveritys["HIGH"];

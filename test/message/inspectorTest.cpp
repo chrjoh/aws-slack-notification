@@ -47,6 +47,15 @@ TEST(Inspector, parse_initial_scan) {
     auto result = inspector.message();
     ASSERT_EQ(result.value(), expected);
 }
+TEST(Inspector, failed_parse_initial_scan) {
+    std::string msg = "{\n    \"version\": \"0\",\n    \"id\": \"22043e9b-1bc1-b4fd-1ae5-d5e2325f0162\",\n    \"detail-type\": \"Inspector2 Scan\",\n    \"source\": \"aws.inspector2\",\n    \"account\": \"XXXXXXXXXXX\",\n    \"time\": \"2024-05-04T23:46:28Z\",\n    \"region\": \"eu-west-1\",\n    \"resources\": [\n        \"arn:aws:lambda:eu-west-1:XXXXXXXXXX:function:api-data-vote-queue-handler:$LATEST\"\n    ],\n    \"detail\": {\n        \"scan-status\": \"INITIAL_SCAN_COMPLETE\",\n        \"scan-type\": \"PACKAGE\",\n        \"finding-severity-counts\": {\n            \"CRITICAL\": 0,\n            \"HIGH\": 0,\n            \"MEDIUM\": 0,\n            \"TOTAL\": 0\n        },\n        \"tags\": {\n            \"ProjectName\": \"api\",\n            \"EnvName\": \"gen\",\n            \"StackId\": \"api-dev\"\n        },\n        \"version\": \"1.0\"\n    }\n}";
+    nlohmann::json json;
+    auto jsonMessage = json.parse(msg);
+    Inspector inspector{false, 0.0, "slack_channel", std::optional<std::string>{}};
+    inspector.parse(jsonMessage);
+    auto result = inspector.message();
+    ASSERT_TRUE(result.has_value());
+}
 
 TEST(Inspector, parse_initial_scan_only_lasted_tag) {
     std::string msg = "{\"version\":\"0\",\"id\":\"b119d033-8f00-72dc-cd8c-4975d21a13c8\",\"detail-type\":\"Inspector2 Scan\",\"source\":\"aws.inspector2\",\"account\":\"123456789123\",\"time\":\"2024-04-24T07:00:47Z\",\"region\":\"eu-west-1\",\"resources\":[\"arn:aws:ecr:eu-west-1:123456789123:repository/server-api-api-primary\"],\"detail\":{\"scan-status\":\"INITIAL_SCAN_COMPLETE\",\"repository-name\":\"arn:aws:ecr:eu-west-1:123456789123:repository/server-api-api-primary\",\"finding-severity-counts\":{\"CRITICAL\":2,\"HIGH\":0,\"MEDIUM\":3,\"TOTAL\":8},\"image-digest\":\"sha256:2083110ca27464385af2e2aaf4a2ce37cee9a12d4ea679c1f38a5038bb99f056c\",\"image-tags\":[],\"version\":\"1.0\"}}";
