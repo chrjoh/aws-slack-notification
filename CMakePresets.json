@@ -28,6 +28,64 @@
                     ]
                 }
             }
+        },
+        {
+            "name": "windows-base",
+            "description": "Sets x64 arch, compilers, build type",
+            "inherits": [
+                "base"
+            ],
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "VCPKG_INSTALL_OPTIONS": "--allow-unsupported",
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_COMPILER": "cl"
+            },
+            "vendor": {
+                "microsoft.com/VisualStudioSttings/CMake/1.0": {
+                    "hostOS": [
+                        "Windows"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "linux-base",
+            "description": "Sets compilers, build type",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_COMPILER": "g++"
+            },
+            "vendor": {
+                "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
+                    "hostOS": [
+                        "Linux"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "linux-warnings",
+            "description": "Enables dev warnings (-wdev)",
+            "inherits": "linux-base",
+            "warnings": {
+                "dev": true
+            }
+        },
+        {
+            "name": "windows-clean-build",
+            "displayName": "Custom configure preset",
+            "description": "Sets Ninja generator, build and install directory",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}"
+            }
         }
     ],
     "buildPresets": [
@@ -53,6 +111,46 @@
             "nativeToolOptions": [
                 "-v"
             ]
+        },
+        {
+            "name": "windows-clean-build",
+            "description": "Clean before build (--clean-first)",
+            "configurePreset": "windows-base",
+            "inherits": "core-build",
+            "cleanFirst": true
+        },
+        {
+            "name": "windows-verbose-build",
+            "description": "Passes -v to Ninja",
+            "configurePreset": "windows-base",
+            "inherits": "core-build",
+            "nativeToolOptions": [
+                "-v"
+            ]
+        },
+        {
+            "name": "linux-clean-build",
+            "description": "Clean before build (--clean-first)",
+            "configurePreset": "linux-base",
+            "inherits": "core-build",
+            "cleanFirst": true
+        },
+        {
+            "name": "linux-verbose-build",
+            "description": "Passes -v to Ninja",
+            "configurePreset": "linux-base",
+            "inherits": "core-build",
+            "nativeToolOptions": [
+                "-v"
+            ]
+        },
+        {
+            "name": "windows-build",
+            "description": "",
+            "displayName": "",
+            "inherits": [
+                "windows-clean-build"
+            ]
         }
     ],
     "testPresets": [
@@ -68,6 +166,16 @@
         {
             "name": "osx-core-test",
             "configurePreset": "osx-base",
+            "inherits": "core-test"
+        },
+        {
+            "name": "windows-core-test",
+            "configurePreset": "windows-base",
+            "inherits": "core-test"
+        },
+        {
+            "name": "linux-core-test",
+            "configurePreset": "linux-base",
             "inherits": "core-test"
         }
     ]
